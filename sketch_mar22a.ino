@@ -14,8 +14,8 @@
 #define IR_SENSOR_RIGHT 32
 
 void normalSpeed() {
-  analogWrite(ENA, 70);  // Set speed for Motor A (0-255)
-  analogWrite(ENB, 70);  // Set speed for Motor B (0-255)
+  analogWrite(ENA, 68);  // Set speed for Motor A (0-255)
+  analogWrite(ENB, 68);  // Set speed for Motor B (0-255)
 }
 
 void turnSpeed() {
@@ -85,25 +85,14 @@ void loop() {
   normalSpeed();
 
   if (leftSensorValue == HIGH && rightSensorValue == LOW) {
-    stopValkiri();
-    delay(50);
-
     turnRightValkiri();
-
     digitalWrite(LED_PIN, HIGH);
 
   } else if (leftSensorValue == LOW && rightSensorValue == HIGH) {
-    stopValkiri();
-    delay(50);
-
     turnLeftValkiri();
-
     digitalWrite(LED_PIN, HIGH);
     
-  } else if (leftSensorValue == LOW && rightSensorValue == LOW) {
-    stopValkiri();
-    delay(50);
-    
+  } else if (leftSensorValue == LOW && rightSensorValue == LOW) { 
     forwardValkiri();
     digitalWrite(LED_PIN, LOW);
      
