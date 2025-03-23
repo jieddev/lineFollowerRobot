@@ -19,8 +19,8 @@
 #define LED_PIN 2
 
 // Speed settings (0-255)
-#define BASE_SPEED 40
-#define MAX_SPEED 80
+#define BASE_SPEED 50
+#define MAX_SPEED 100
 
 // PID Constants
 #define KP 0.5    // Proportional constant
