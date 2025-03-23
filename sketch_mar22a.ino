@@ -1,5 +1,8 @@
 #include <Arduino.h>
 
+#define BLACK LOW
+#define WHITE HIGH
+
 #define ENA  5   // PWM for Motor A speed
 #define IN1  18  // Motor A forward
 #define IN2  19  // Motor A backward
@@ -13,14 +16,20 @@
 #define IR_SENSOR_LEFT 33
 #define IR_SENSOR_RIGHT 32
 
+unsigned long lastSensorChange = 0;
+
+int lastLeftState = WHITE;
+
+int lastRightState = WHITE;
+
 void normalSpeed() {
   analogWrite(ENA, 68);  // Set speed for Motor A (0-255)
   analogWrite(ENB, 68);  // Set speed for Motor B (0-255)
 }
 
 void turnSpeed() {
-  analogWrite(ENA, 100);  // Set speed for Motor A (0-255)
-  analogWrite(ENB, 100);  // Set speed for Motor B (0-255)
+  analogWrite(ENA, 63);
+  analogWrite(ENB, 63);
 }
 
 void stopValkiri() {
@@ -39,23 +48,27 @@ void forwardValkiri() {
 }
 
 void turnLeftValkiri() {
+
   // Right Motor Forward
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
   // Left Motor Stops
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, LOW);
+
   digitalWrite(LED_PIN, HIGH);
 
 }
 
 void turnRightValkiri() {
+
   // Right Motor Stops
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, LOW);
   // Left Motor Forward
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
+
   digitalWrite(LED_PIN, HIGH);
 
 }
@@ -82,19 +95,40 @@ void loop() {
   int leftSensorValue = digitalRead(IR_SENSOR_LEFT);
   int rightSensorValue = digitalRead(IR_SENSOR_RIGHT);
 
-  normalSpeed();
+  if (leftSensorValue != lastLeftState || rightSensorValue != lastRightState) {
+    lastSensorChange = millis();
+
+    lastLeftState = leftSensorValue;
+
+    lastRightState = rightSensorValue;
+  } else {
+      if (millis() - lastSensorChange > 3500) {
+        if (lastLeftState == BLACK && lastRightState == WHITE) {
+          normalSpeed();
+          turnLeftValkiri();
+        } 
+        if (lastLeftState == WHITE && lastRightState == BLACK) {
+          normalSpeed();
+          turnRightValkiri();
+        }
+      }
+  }
 
   if (leftSensorValue == HIGH && rightSensorValue == LOW) {
+    normalSpeed();
     turnRightValkiri();
     digitalWrite(LED_PIN, HIGH);
 
   } else if (leftSensorValue == LOW && rightSensorValue == HIGH) {
+    normalSpeed();
     turnLeftValkiri();
     digitalWrite(LED_PIN, HIGH);
     
   } else if (leftSensorValue == LOW && rightSensorValue == LOW) { 
+    normalSpeed();
     forwardValkiri();
     digitalWrite(LED_PIN, LOW);
+    
      
   }
 
