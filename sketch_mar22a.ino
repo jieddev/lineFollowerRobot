@@ -13,6 +13,9 @@
 
 #define LED_PIN 2   // D2 LED on ESP32
 
+#define MIN_SPEED 45
+#define MAX_SPEED 70
+
 #define IR_SENSOR_LEFT 33
 #define IR_SENSOR_RIGHT 32
 
@@ -23,13 +26,15 @@ int lastLeftState = WHITE;
 int lastRightState = WHITE;
 
 void normalSpeed() {
-  analogWrite(ENA, 68);  // Set speed for Motor A (0-255)
-  analogWrite(ENB, 68);  // Set speed for Motor B (0-255)
+  int speed = applySpeedConstraint(68);
+  analogWrite(ENA, speed);  // Set speed for Motor A (0-255)
+  analogWrite(ENB, speed);  // Set speed for Motor B (0-255)
 }
 
 void turnSpeed() {
-  analogWrite(ENA, 63);
-  analogWrite(ENB, 63);
+  int speed = applySpeedConstraint(46); 
+  analogWrite(ENA, speed);
+  analogWrite(ENB, speed);
 }
 
 void stopValkiri() {
@@ -71,6 +76,12 @@ void turnRightValkiri() {
 
   digitalWrite(LED_PIN, HIGH);
 
+}
+
+int applySpeedConstraint(int speed) {
+  if (speed == 0) return 0;
+
+  return constrain(speed, MIN_SPEED, MAX_SPEED);
 }
 
 void setup() {
@@ -116,11 +127,17 @@ void loop() {
 
   if (leftSensorValue == HIGH && rightSensorValue == LOW) {
     normalSpeed();
+    delay(10);
+
+    turnSpeed();
     turnRightValkiri();
     digitalWrite(LED_PIN, HIGH);
 
   } else if (leftSensorValue == LOW && rightSensorValue == HIGH) {
     normalSpeed();
+    delay(10);
+    
+    turnSpeed();
     turnLeftValkiri();
     digitalWrite(LED_PIN, HIGH);
     
