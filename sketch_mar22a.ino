@@ -26,7 +26,7 @@ int lastLeftState = WHITE;
 int lastRightState = WHITE;
 
 void normalSpeed() {
-  int speed = applySpeedConstraint(68);
+  int speed = applySpeedConstraint(69);
   analogWrite(ENA, speed);  // Set speed for Motor A (0-255)
   analogWrite(ENB, speed);  // Set speed for Motor B (0-255)
 }
